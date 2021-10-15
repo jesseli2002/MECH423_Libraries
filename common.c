@@ -94,7 +94,7 @@ bool Buffer_empty(Buffer* buf) {
 #define PACKET_START_BYTE 0xFF
 
 // Parser state. Used to track where in the packet we are
-enum Packet_ParseState {
+typedef enum {
     Packet_ParseState_err, // error state. For convenience, this is also the initial state.
 
     // Remainder of states indicate which byte is about to be read
