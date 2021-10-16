@@ -1,3 +1,6 @@
+#ifndef MECH423_LIB_ADC_H
+#define MECH423_LIB_ADC_H
+
 #include <msp430.h>
 #include <stdbool.h>
 
@@ -190,3 +193,5 @@ __interrupt void conversionDone(void){
     }
     converted = true;
 }
+
+#endif

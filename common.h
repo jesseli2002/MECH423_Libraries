@@ -1,3 +1,6 @@
+#ifndef MECH423_LIB_COMMON_H
+#define MECH423_LIB_COMMON_H
+
 /*
  * Useful Headers ============================================
  * Useful Headers ============================================
@@ -195,3 +198,5 @@ bool Packet_parseNext(Packet* packet, unsigned char next_val){
         return false;
     }
 }
+
+#endif

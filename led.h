@@ -1,3 +1,5 @@
+#ifndef MECH423_LIB_LED_H
+#define MECH423_LIB_LED_H
 /*
  * LED Configuration ============================================
  * LED Configuration ============================================
@@ -70,3 +72,5 @@ inline void Led_toggle(unsigned char leds){
     P3OUT ^= leds & 0xF0;
     PJOUT ^= leds & 0x0F;
 }
+
+#endif
