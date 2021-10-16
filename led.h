@@ -9,6 +9,8 @@ inline void Led_init(unsigned char leds);
 inline void Led_enable(unsigned char leds);
 inline void Led_disable(unsigned char leds);
 inline void Led_set(unsigned char leds);
+inline void Led_toggle(unsigned char leds);
+
 /*
 LED Output table:
 LED8: P3, BIT7
