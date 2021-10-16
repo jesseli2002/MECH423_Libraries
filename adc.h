@@ -69,7 +69,7 @@ int main(void)
 
     // Set DCO clock speed to 8 MHz
     CSCTL1 |= DCOFSEL0 + DCOFSEL1; // DCOFSEL = 0b11 => freq = 8MHz
-    CSCTL1 &= ~DCORSEL;
+    CSCTL1 &= ~DCORSEL;	// Change the DCO output to the lower output range
 
     // MCLK = DCO, ACLK = DCO, SMCLK = DCO
     CSCTL2 = SELM0 + SELM1 + SELA0 + SELA1 + SELS0 + SELS1;
@@ -110,8 +110,8 @@ int main(void)
     // Setup UART -----------------------------------
 
     // Setup P2.0, P2.1 for UART
-    P2SEL0 &= ~(BIT0 + BIT1);
-    P2SEL1 |= BIT0 + BIT1;
+    P2SEL0 &= ~(BIT0 + BIT1); // for UCA0 TX and RX
+    P2SEL1 |= BIT0 + BIT1; // for UCA0 TX and RX
 
     // Enable UC software reset while modifying settings
     UCA0CTLW0 |= UCSWRST;
@@ -122,9 +122,10 @@ int main(void)
     UCA0CTLW0 |= (UCSSEL1 + UCSSEL0); // Use SMCLK
 
     // Baud rate setup (9600 baud)
-    UCA0BRW = 52; // UCBRx
+    UCA0BRW = 52; // UCBRx, referencing Table 18-5
     UCA0MCTLW_L = (1 /* = UCBRFx */ << 4) + UCOS16 /* OS16 = 1*/;
     UCA0MCTLW_H = 0x49; // UCBRSx
+	UCA0IE |= UCRXIE; // Enable the transmit interrupt
 
     // Clear UC software reset to enable UART
     UCA0CTLW0 &= ~UCSWRST;
@@ -187,11 +188,12 @@ __interrupt void conversionDone(void){
     case  6: break;                          // ADC10HI
     case  8: break;                          // ADC10LO
     case 10: break;                          // ADC10IN
-    case 12: data = ADC10MEM0;
+    case 12: data = ADC10MEM0 >> 2;			 // Select the 8 least significant bits
+			 converted = true;
              break;
     default: break;
     }
-    converted = true;
+    
 }
 
 #endif
