@@ -31,8 +31,8 @@ typedef struct {
     volatile unsigned char* volatile wi_; // write pointer - next write goes here
 } Buffer;
 #define Buffer_Buffer(varname, size) \
-    unsigned char varname_##__LINE__##_buf[size]; \
-    Buffer varname = {varname_##__LINE__##_buf, size, varname_##__LINE__##_buf, varname_##__LINE__##_buf};
+    unsigned char varname ## _UNDERLYING_BUFFER[size]; \
+    Buffer varname = {varname ## _UNDERLYING_BUFFER, size, varname ## _UNDERLYING_BUFFER, varname ## _UNDERLYING_BUFFER};
 
 /**
  * @brief Writes (enqueues) data into the buffer
