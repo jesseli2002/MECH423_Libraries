@@ -5,7 +5,10 @@
 #include "timer.h"
 
 void flashLed() {
-    Led_toggle(0b00000011);
+    Led_toggle(0b0011);
+}
+void flashLed2() {
+    Led_toggle(0b1100);
 }
 
 unsigned int time = 0;
@@ -60,7 +63,8 @@ int main(void)
     // Measure square wave on P2.1.
 
     // [2] Periodic functions
-    Timer_configurePeriodicInterrupt(TimerA2, TASSEL__ACLK, 8000000ul, 3, &flashLed);
+    Timer_configurePeriodicInterrupt(TimerB1, TASSEL__ACLK, 8000000ul, 3, &flashLed);
+    Timer_configurePeriodicInterrupt(TimerB0, TASSEL__ACLK, 8000000ul, 4, &flashLed2);
 
     // [3] Capture
     // Connect P2.1 to P1.0 or P1.1 with a female-female jumper.
