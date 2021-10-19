@@ -157,12 +157,12 @@ bool Uart_hasData()
  * if(QueueIsEmpty)
  * {
  * 	  char ErrorMessageEmpty[] = "Error: Queue Empty";
- *    TransmitMessage(ErrorMessageEmpty);
+ *    Uart_transmitMessage(ErrorMessageEmpty);
  * }
 
  **/
 
-void TransmitMessage(char* Message)
+void Uart_transmitMessage(char* Message)
 {
     int messageLength = strlen(Message);
     int i;
