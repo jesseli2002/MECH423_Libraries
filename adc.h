@@ -5,14 +5,13 @@
 #include <stdbool.h> // required to use Booleans in C
 
 // ADC variables
-volatile unsigned int data = 0; // last read data
-volatile bool converted = false; // flag set in ISR
+volatile unsigned int Adc_data_ = 0; // last read data
+volatile bool Adc_converted_ = false; // flag set in ISR
 
-#define Adc_NTC_ANALOG_PIN_ 4
-#define Adc_AccelerometerX_ 12
-#define Adc_AccelerometerY_ 13
-#define Adc_AccelerometerZ_ 14
-
+#define Adc_NTC_ANALOG_PIN 4
+#define Adc_ACCELEROMETER_X_ 12
+#define Adc_ACCELEROMETER_Y_ 13
+#define Adc_ACCELEROMETER_Z_ 14
 
 /**
  * @brief Measures and returns an analog value on the specified pin
@@ -21,6 +20,7 @@ volatile bool converted = false; // flag set in ISR
  * 		  AccelerometerX: Pin 12
  * 		  AccelerometerY: Pin 13
  * 		  AccelerometerZ: Pin 14
+ * @return Returns the 10 bit result inside of a 16 bit int. Bit shift with result >> 2 to return 8 MSB. cast to char or write data & 0xFF to return 8 LSB (better accuracy)
  **/
  unsigned int Adc_read(int analogPin) {
     ADC10CTL0 &= ~ADC10ENC; // Disable conversion, so we can change channel
