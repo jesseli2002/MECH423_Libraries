@@ -156,17 +156,6 @@ typedef struct {
     Packet_ParseState state;
 } Packet;
 
-// Define commands - this is just a sample
-enum Command {
-    Command_setFreq = 1,
-    Command_ledOn = 2,
-    Command_ledOff = 3,
-    Command_echo = 4,
-    Command_setDutyCycle = 5,
-    Command_ledCtl = 6,
-    Command_echoString = 7
-};
-
 /**
  * @brief Incremental parser for a packet of data.
  * @param packet Pointer to packet. Packet gets filled out as more data is parsed
