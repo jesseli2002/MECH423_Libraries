@@ -57,43 +57,43 @@ void ADC_init(int sampleHoldCycles, int preDivider, int divider, unsigned int cl
     switch(sampleHoldCycles)
 	{
 		case 4:
-			ADC10CTL0 |= ADC10SHT_0
+			ADC10CTL0 |= ADC10SHT_0;
 			break;
 		case 8:
-			ADC10CTL0 |= ADC10SHT_1
+			ADC10CTL0 |= ADC10SHT_1;
 			break;
 		case 16:
-			ADC10CTL0 |= ADC10SHT_2
+			ADC10CTL0 |= ADC10SHT_2;
 			break;
 		case 32:
-			ADC10CTL0 |= ADC10SHT_3
+			ADC10CTL0 |= ADC10SHT_3;
 			break;
 		case 64:
-			ADC10CTL0 |= ADC10SHT_4
+			ADC10CTL0 |= ADC10SHT_4;
 			break;
 		case 96:
-			ADC10CTL0 |= ADC10SHT_5
+			ADC10CTL0 |= ADC10SHT_5;
 			break;
 		case 128:
-			ADC10CTL0 |= ADC10SHT_6
+			ADC10CTL0 |= ADC10SHT_6;
 			break;
 		case 192:
-			ADC10CTL0 |= ADC10SHT_7
+			ADC10CTL0 |= ADC10SHT_7;
 			break;
 		case 256:
-			ADC10CTL0 |= ADC10SHT_8
+			ADC10CTL0 |= ADC10SHT_8;
 			break;
 		case 384:
-			ADC10CTL0 |= ADC10SHT_9
+			ADC10CTL0 |= ADC10SHT_9;
 			break;
 		case 512:
-			ADC10CTL0 |= ADC10SHT_10
+			ADC10CTL0 |= ADC10SHT_10;
 			break;
 		case 768:
-			ADC10CTL0 |= ADC10SHT_11
+			ADC10CTL0 |= ADC10SHT_11;
 			break;
 		case 1024:
-			ADC10CTL0 |= ADC10SHT_12
+			ADC10CTL0 |= ADC10SHT_12;
 			break;
 		default:
 			break;
