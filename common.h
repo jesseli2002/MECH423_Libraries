@@ -15,6 +15,40 @@
 #include <string.h>
 
 /*
+ * Print String ===========================================
+ * Print String ===========================================
+ * Print String ===========================================
+ */
+
+/**
+ * @brief Sends a char array to the MSP430 transmission buffer.
+ * @param Message Pointer to the message.
+ * @return void
+ *
+ * Example usage:
+ * if(QueueIsEmpty)
+ * {
+ * 	  char ErrorMessageEmpty[] = "Error: Queue Empty";
+ *    TransmitMessage(ErrorMessageEmpty);
+ * }
+
+ **/
+
+void TransmitMessage(char* Message)
+{
+    int messageLength = strlen(Message);
+    int i;
+    for(i = 0; i < messageLength; i++)
+    {
+        while ((UCA0IFG & UCTXIFG)==0);
+        UCA0TXBUF = Message[i];
+    }
+    return;
+}
+
+
+
+/*
  * Circular Buffer ===========================================
  * Circular Buffer ===========================================
  * Circular Buffer ===========================================
