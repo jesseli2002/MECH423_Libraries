@@ -10,32 +10,6 @@ volatile bool converted = false; // flag set in ISR
 
 #define NTC_ANALOG_PIN 4
 
-/**
- * @brief Turns on a set number of LEDs.
- * @param value Number of LEDs to turn on. If greater than 8, all LEDs turned on
- *
- * PJDIR and P3DIR must be set to output.
- **/
-void setLedLevel(int value) {
-    // clear all outputs
-    PJOUT &= ~(BIT0 + BIT1 + BIT2 + BIT3);
-    P3OUT &= ~(BIT4 + BIT5 + BIT6 + BIT7);
-
-    if (value <= 0) {return;}
-    // higher cases will fall through to lower cases
-    switch(value){
-    default:
-    case 8: P3OUT |= BIT7;
-    case 7: P3OUT |= BIT6;
-    case 6: P3OUT |= BIT5;
-    case 5: P3OUT |= BIT4;
-    case 4: PJOUT |= BIT3;
-    case 3: PJOUT |= BIT2;
-    case 2: PJOUT |= BIT1;
-    case 1: PJOUT |= BIT0;
-    case 0: break;
-    }
-}
 
 /**
  * @brief Measures and returns an analog value on the specified pin
@@ -76,7 +50,7 @@ void ADC_init(int sampleHoldCycles, int preDivider, int divider, unsigned int cl
 {
 	ADC10CTL0 &= ~ADC10ENC;                 // Disable conversion
 	ADC10CTL0 |= ADC10ON;                   // Activate the ADC
-    
+
     switch(sampleHoldCycles)
 	{
 		case 4:
@@ -84,7 +58,7 @@ void ADC_init(int sampleHoldCycles, int preDivider, int divider, unsigned int cl
 			break;
 		case 8:
 			ADC10CTL0 |= ADC10SHT_1
-			break;		
+			break;
 		case 16:
 			ADC10CTL0 |= ADC10SHT_2
 			break;
@@ -108,93 +82,93 @@ void ADC_init(int sampleHoldCycles, int preDivider, int divider, unsigned int cl
 			break;
 		case 384:
 			ADC10CTL0 |= ADC10SHT_9
-			break;			
+			break;
 		case 512:
 			ADC10CTL0 |= ADC10SHT_10
-			break;			
+			break;
 		case 768:
 			ADC10CTL0 |= ADC10SHT_11
 			break;
 		case 1024:
 			ADC10CTL0 |= ADC10SHT_12
-			break;						
+			break;
 		default:
 			break;
 	}
-    
+
     ADC10CTL1 |= ADC10SHS_0;                // Set the source as ADC10SC bit
     ADC10CTL1 |= ADC10SHP;                  // Set the source of Sampling Signal (SAMPCON) as the sampling timer
     ADC10CTL1 |= ADC10CONSEQ_0;             // Single channel, single conversion
-    
+
 	switch(divider)
 	{
 		case 1:
-			ADC10CTL1 |= ADC10DIV_0;                // ADC10 Clock Divider Select /1		
+			ADC10CTL1 |= ADC10DIV_0;                // ADC10 Clock Divider Select /1
 			break;
 		case 2:
-			ADC10CTL1 |= ADC10DIV_1;                // ADC10 Clock Divider Select /2		
+			ADC10CTL1 |= ADC10DIV_1;                // ADC10 Clock Divider Select /2
 			break;
 		case 3:
-			ADC10CTL1 |= ADC10DIV_2;                // ADC10 Clock Divider Select /3		
+			ADC10CTL1 |= ADC10DIV_2;                // ADC10 Clock Divider Select /3
 			break;
 		case 4:
-			ADC10CTL1 |= ADC10DIV_3;                // ADC10 Clock Divider Select /3		
+			ADC10CTL1 |= ADC10DIV_3;                // ADC10 Clock Divider Select /3
 			break;
 		case 5:
-			ADC10CTL1 |= ADC10DIV_4;                // ADC10 Clock Divider Select /3		
+			ADC10CTL1 |= ADC10DIV_4;                // ADC10 Clock Divider Select /3
 			break;
 		case 6:
-			ADC10CTL1 |= ADC10DIV_5;                // ADC10 Clock Divider Select /3		
+			ADC10CTL1 |= ADC10DIV_5;                // ADC10 Clock Divider Select /3
 			break;
 		case 7:
-			ADC10CTL1 |= ADC10DIV_6;                // ADC10 Clock Divider Select /3		
+			ADC10CTL1 |= ADC10DIV_6;                // ADC10 Clock Divider Select /3
 			break;
 		case 8:
-			ADC10CTL1 |= ADC10DIV_7;                // ADC10 Clock Divider Select /3		
+			ADC10CTL1 |= ADC10DIV_7;                // ADC10 Clock Divider Select /3
 			break;
 		default:
 			break;
 	}
-	
+
 	switch(preDivider)
 	{
 		case 1:
-			ADC10CTL1 |= ADC10PDIV_0;                // ADC10 Pre Clock Divider Select /3		
+			ADC10CTL1 |= ADC10PDIV_0;                // ADC10 Pre Clock Divider Select /3
 			break;
 		case 4:
-			ADC10CTL1 |= ADC10PDIV_1;                // ADC10 Pre Clock Divider Select /4		
-			break;			
+			ADC10CTL1 |= ADC10PDIV_1;                // ADC10 Pre Clock Divider Select /4
+			break;
 		case 64:
-			ADC10CTL1 |= ADC10PDIV_2;                // ADC10 Pre Clock Divider Select /64		
-			break;						
+			ADC10CTL1 |= ADC10PDIV_2;                // ADC10 Pre Clock Divider Select /64
+			break;
 		default:
 			break;
-	}	
-	
+	}
+
 	switch(clockSource)
 	{
 		case 0:
-			ADC10CTL1 |= ADC10SSEL_0;                // ADC10 Pre Clock Divider Select /3		
+			ADC10CTL1 |= ADC10SSEL_0;                // ADC10 Pre Clock Divider Select /3
 			break;
 		case 1:
-			ADC10CTL1 |= ADC10SSEL_1;                // ADC10 Pre Clock Divider Select /4		
-			break;			
+			ADC10CTL1 |= ADC10SSEL_1;                // ADC10 Pre Clock Divider Select /4
+			break;
 		case 2:
-			ADC10CTL1 |= ADC10SSEL_2;                // ADC10 Pre Clock Divider Select /64		
-			break;					
+			ADC10CTL1 |= ADC10SSEL_2;                // ADC10 Pre Clock Divider Select /64
+			break;
 		case 3:
-			ADC10CTL1 |= ADC10SSEL_3;                // ADC10 Pre Clock Divider Select /64		
-			break;					
+			ADC10CTL1 |= ADC10SSEL_3;                // ADC10 Pre Clock Divider Select /64
+			break;
 	}
-	
-	
+
+
     ADC10CTL2 |= ADC10RES;                  // 10-bit conversion results
 	ADC10IE = ADC10IE0;                     // enable conversion complete interrupts
-	
+
 	// Power Up Sensors
 	P2DIR |= BIT7;                           // Setting P2.7 as an output
     P2OUT |= BIT7;                           // Setting P2.7 to output HIGH
-	
+
 	return;
 }
 
@@ -209,12 +183,12 @@ __interrupt void conversionDone(void){
     case  6: break;                          // ADC10HI
     case  8: break;                          // ADC10LO
     case 10: break;                          // ADC10IN
-    case 12: data = ADC10MEM0;			     // 
+    case 12: data = ADC10MEM0;			     //
 			 converted = true;
              break;
     default: break;
     }
-    
+
 }
 
 #endif

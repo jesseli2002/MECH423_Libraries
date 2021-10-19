@@ -75,4 +75,30 @@ inline void Led_toggle(unsigned char leds){
     PJOUT ^= leds & 0x0F;
 }
 
+/**
+ * @brief Turns on a set number of LEDs, in order from 0 to 8
+ * @param value Number of LEDs to turn on. If greater than 8, all LEDs turned on. If less than 0, no LEDs turned on.
+ *
+ * PJDIR and P3DIR must be set to output, e.g. by calling Led_init(0xFF);
+ **/
+void Led_setLevel(int value) {
+    // clear all outputs
+    PJOUT &= ~(BIT0 + BIT1 + BIT2 + BIT3);
+    P3OUT &= ~(BIT4 + BIT5 + BIT6 + BIT7);
+
+    if (value <= 0) {return;}
+    // higher cases will fall through to lower cases
+    switch(value){
+    default:
+    case 8: P3OUT |= BIT7;
+    case 7: P3OUT |= BIT6;
+    case 6: P3OUT |= BIT5;
+    case 5: P3OUT |= BIT4;
+    case 4: PJOUT |= BIT3;
+    case 3: PJOUT |= BIT2;
+    case 2: PJOUT |= BIT1;
+    case 1: PJOUT |= BIT0;
+    case 0: break;
+    }
+}
 #endif
