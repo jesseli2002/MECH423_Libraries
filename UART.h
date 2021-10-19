@@ -11,13 +11,12 @@
  */
 
  /*
-  * This function creates a circular buffer for UART read data storage
-  * @parm int size of circular buffer
+  * This code creates a circular buffer for UART read data storage of size BUFFER_SIZE (Default size is 126)
   */
-void uartBufferCreation(int sizeOfBuffer)
-{
-    Buffer_Buffer(Uart_buffer_, sizeOfBuffer); //Name of circular buffer created
-}
+#define BUFFER_SIZE 0x7E // 126 in hex
+
+Buffer_Buffer(Uart_buffer_, BUFFER_SIZE); //Name of circular buffer created
+
 
 /*
  *
@@ -114,7 +113,6 @@ __interrupt void USCI_A0_ISR(void)
 
 
  /*
-  * You need to create a buffer before using this function using "void uartBufferCreation(int sizeOfBuffer)" from above.
   * This ISR receives data, and writes this data to a previously created circular buffer called Uart_buffer_
   * ISR vector used: USCI_A0_VECTOR
   * Name of circular buffer used: Uart_buffer_
