@@ -68,7 +68,7 @@ void Clock_Init(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
         break;
     }
 
-    CSCTL3 = Clock_dividerEncoder(mdiv) << 0 + Clock_dividerEncoder(smdiv) << 4 Clock_dividerEncoder(adiv) << 8;
+    CSCTL3 = Clock_DividerEncoder(mdiv) << 0 + Clock_DividerEncoder(smdiv) << 4 Clock_DividerEncoder(adiv) << 8;
 }
 
 /**
@@ -78,7 +78,7 @@ void Clock_Init(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
  *
  * */
 
-void Clock_setDCOtoCLK(int CLKval, int CLKdiv){
+void Clock_SetDCOToCLK(int CLKval, int CLKdiv){
     if(CLKval == 1){
         CSCTL2 |= SELA0 + SELA1;
     } else if (CLKval == 2){
@@ -93,7 +93,7 @@ void Clock_setDCOtoCLK(int CLKval, int CLKdiv){
  * @param decimal divider value
  *
  * */
-void  Clock_dividerEncoder(unsigned int divVal) {
+void  Clock_DividerEncoder(unsigned int divVal) {
 
     if(divVal == 1)
         return 0b000;
