@@ -8,19 +8,9 @@
 
 
 
-/**
- * main.c
- */
-int main(void)
-{
-
-	
-	return 0;
-}
-
 typedef enum {
     Clock_DcoFreq_5, // 5.33
-    Clock_DcoFreq_6,
+    Clock_DcoFreq_6, //6.77
     Clock_DcoFreq_8,
     Clock_DcoFreq_16,
     Clock_DcoFreq_20,
@@ -29,13 +19,17 @@ typedef enum {
 
 /**
  * @brief Configure DCO at a given MHZ
- * @param Integer value (only of the clock) Clock frequency can be given for 5.3, 6.7,8, 16,20, and 24.
+ * @param Clock_DcoFreq: Integer value (only of the clock) Clock frequency can be given for 5.3, 6.7,8, 16,20, and 24.
+ * @param mdiv: Clock divider to be applied to the main clock
+ * @param smdiv: Clock divider to be applied to the SM clock
+ * @param adiv: Clock divider to be applied to the A clock
+ *
  *
  * Example: inputting 5 will set the frequency to 5.3 MHz
  * DCO set at 8 MHZ is the standard for all other peripherals
  *
  * */
-void Clock_Init(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
+void clockInit(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
     //Enter clock control password
     CSCTL0 = CSKEY;
 
@@ -68,45 +62,38 @@ void Clock_Init(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
         break;
     }
 
-    CSCTL3 = Clock_DividerEncoder(mdiv) << 0 + Clock_DividerEncoder(smdiv) << 4 Clock_DividerEncoder(adiv) << 8;
+    CSCTL2 &= ~(SELA0 + SELA1 + SELA2 + SELM0 + SELM1 + SELM2 + SELS0 + SELS1 + SELS2); //reset all clock designation
+
+    CSCTL2 |= SELA0 + SELA1 + SELM0 + SELM1 + SELS0 + SELS1; //set all clocks to DCO
+
+    CSCTL3 = clockDividerEncoder(mdiv) << 0 + clockDividerEncoder(smdiv) << 4 clockDividerEncoder(adiv) << 8; //setting the divider bits
 }
 
-/**
- * @brief set DCO to the desired clock
- * @param int of the clock ACLK = 1, MCLK = 2, SMCLK = 3
- * @param clock divider value you would want (1,2,4,8,16,32)
- *
- * */
-
-void Clock_SetDCOToCLK(int CLKval, int CLKdiv){
-    if(CLKval == 1){
-        CSCTL2 |= SELA0 + SELA1;
-    } else if (CLKval == 2){
-        CSCTL2 |= SELM0 + SELM1;
-    } else if (CLKval == 3){
-        CSCTL2 |= SELS0 + SELS1;
-    }
-}
 
 /**
  * @brief convert a divider value to the associated binary values needed
- * @param decimal divider value
+ * @param divVal: decimal divider value for a clock including 1, 2, 4, 8, 16, 32
+ * @return binary value to get the appropriate  divider. If no appropriate divider value is provided then no divier will be applied.
  *
  * */
-void  Clock_DividerEncoder(unsigned int divVal) {
+int clockDividerEncoder(unsigned int divVal) {
 
-    if(divVal == 1)
+    switch(divVal){
+    case 1:
         return 0b000;
-    if(divVal == 2)
+    case 2:
         return 0b001;
-    if(divVal == 4)
+    case 4:
         return 0b010;
-    if(divVal == 8)
+    case 8:
         return 0b011;
-    if(divVal == 16)
+    case 16:
         return 0b100;
-    if(divVal == 32)
+    case 32:
         return 0b101;
+    }
+    default:
+        return 0b000;
 }
 
 
