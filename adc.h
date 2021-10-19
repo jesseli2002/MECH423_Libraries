@@ -27,14 +27,14 @@ volatile bool Adc_converted_ = false; // flag set in ISR
     ADC10MCTL0 = analogPin * ADC10INCH0; // Sample from specified pin
     ADC10CTL0 |= ADC10ENC; // Enable conversion
 
-    converted = false; // Local indicator of conversion
+    Adc_converted_ = false; // Local indicator of conversion
     ADC10CTL0 |= ADC10SC; // Start conversion. ADC10SC is auto-cleared (see p. 437)
 
     // Wait for conversion to finish
-    while (!converted);
+    while (!Adc_converted_);
 
     // Output result
-    return data;
+    return Adc_data_;
 }
 
 
@@ -186,8 +186,8 @@ __interrupt void conversionDone(void){
     case  6: break;                          // ADC10HI
     case  8: break;                          // ADC10LO
     case 10: break;                          // ADC10IN
-    case 12: data = ADC10MEM0;			     //
-			 converted = true;
+    case 12: Adc_data_ = ADC10MEM0;			     //
+			 Adc_converted_ = true;
              break;
     default: break;
     }
