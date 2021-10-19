@@ -9,6 +9,9 @@ volatile unsigned int data = 0; // last read data
 volatile bool converted = false; // flag set in ISR
 
 #define NTC_ANALOG_PIN 4
+#define AccelerometerX 12
+#define AccelerometerY 13
+#define AccelerometerZ 14
 
 
 /**
