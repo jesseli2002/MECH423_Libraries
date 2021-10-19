@@ -2,7 +2,7 @@
 #define MECH423_LIB_CLOCK_H
 
 
-#include <msp430.h> 
+#include <msp430.h>
 #include <stdbool.h>
 #include <stdlib.h>
 
@@ -15,7 +15,7 @@ typedef enum {
     Clock_DcoFreq_16,
     Clock_DcoFreq_20,
     Clock_DcoFreq_24
-} Clock_DcoFreq;
+} Clock_DcoFreq; // MHz
 
 /**
  * @brief Configure DCO at a given MHZ
@@ -27,6 +27,8 @@ typedef enum {
  *
  * Example: inputting 5 will set the frequency to 5.3 MHz
  * DCO set at 8 MHZ is the standard for all other peripherals
+ *
+ * Dividers can be any of 1, 2, 4, 8, 16, 32.
  *
  * */
 void clockInit(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
@@ -66,7 +68,7 @@ void clockInit(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
 
     CSCTL2 |= SELA0 + SELA1 + SELM0 + SELM1 + SELS0 + SELS1; //set all clocks to DCO
 
-    CSCTL3 = clockDividerEncoder(mdiv) << 0 + clockDividerEncoder(smdiv) << 4 clockDividerEncoder(adiv) << 8; //setting the divider bits
+    CSCTL3 = Clock_dividerEncoder_(mdiv) << 0 + Clock_dividerEncoder_(smdiv) << 4 + Clock_dividerEncoder_(adiv) << 8; //setting the divider bits
 }
 
 
@@ -76,7 +78,7 @@ void clockInit(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
  * @return binary value to get the appropriate  divider. If no appropriate divider value is provided then no divier will be applied.
  *
  * */
-int clockDividerEncoder(unsigned int divVal) {
+int Clock_dividerEncoder_(unsigned int divVal) {
 
     switch(divVal){
     case 1:
@@ -96,4 +98,4 @@ int clockDividerEncoder(unsigned int divVal) {
         return 0b000;
 }
 
-
+#endif

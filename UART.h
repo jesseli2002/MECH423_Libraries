@@ -1,3 +1,6 @@
+#ifndef MECH423_LIB_UART_H
+#define MECH423_LIB_UART_H
+
 #include <common.h>
 #include <stdbool.h>
 #include <string.h>
@@ -11,13 +14,12 @@
  */
 
  /*
-  * This function creates a circular buffer for UART read data storage
-  * @parm int size of circular buffer
+  * This code creates a circular buffer for UART read data storage of size BUFFER_SIZE (Default size is 126)
   */
-void uartBufferCreation(int sizeOfBuffer)
-{
-    Buffer_Buffer(Uart_buffer_, sizeOfBuffer); //Name of circular buffer created
-}
+#define BUFFER_SIZE 0x7E // 126 in hex
+
+Buffer_Buffer(Uart_buffer_, BUFFER_SIZE); //Name of circular buffer created
+
 
 /*
  *
@@ -101,7 +103,7 @@ __interrupt void USCI_A0_ISR(void)
 {
     RxByte = UCA0RXBUF;                 // Receive byte gets whatever is in the receive buffer
     while ((UCA0IFG & UCTXIFG) == 0);     // UCA0IFG: No interrupts pending. UCTXIFG is set when new data can be written into UCAxTXBUF
-	Buffer_write(Uart_buffer_, RxByte);	
+	Buffer_write(Uart_buffer_, RxByte);
 }
 
 /*
@@ -114,7 +116,6 @@ __interrupt void USCI_A0_ISR(void)
 
 
  /*
-  * You need to create a buffer before using this function using "void uartBufferCreation(int sizeOfBuffer)" from above.
   * This ISR receives data, and writes this data to a previously created circular buffer called Uart_buffer_
   * ISR vector used: USCI_A0_VECTOR
   * Name of circular buffer used: Uart_buffer_
@@ -131,12 +132,12 @@ int Uart_read()
 	}
 	else
 	{
-		return Buffer_read(Uart_buffer_);		
+		return Buffer_read(Uart_buffer_);
 	}
 }
 /*
  * @brief returns true if data is available from the circular buffer, false otherwise
- * @param 
+ * @param
  */
 bool Uart_hasData()
 {
@@ -159,12 +160,12 @@ bool Uart_hasData()
  * if(QueueIsEmpty)
  * {
  * 	  char ErrorMessageEmpty[] = "Error: Queue Empty";
- *    TransmitMessage(ErrorMessageEmpty);
+ *    Uart_transmitMessage(ErrorMessageEmpty);
  * }
 
  **/
 
-void Uart_transmitMessage_(char* Message)
+void Uart_transmitMessage_(const char* Message)
 {
     int messageLength = strlen(Message);
     int i;
@@ -176,3 +177,4 @@ void Uart_transmitMessage_(char* Message)
     return;
 }
 
+#endif

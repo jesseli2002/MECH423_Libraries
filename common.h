@@ -67,9 +67,27 @@ typedef struct {
     volatile unsigned char* volatile ri_; // read pointer - next read from here
     volatile unsigned char* volatile wi_; // write pointer - next write goes here
 } Buffer;
+
 #define Buffer_Buffer(varname, size) \
     unsigned char varname ## _UNDERLYING_BUFFER[size]; \
     Buffer varname = {varname ## _UNDERLYING_BUFFER, size, varname ## _UNDERLYING_BUFFER, varname ## _UNDERLYING_BUFFER};
+
+/**
+ * @brief Creates a buffer. Alternative to Buffer_Buffer macro.
+*/
+void Buffer_create(Buffer* buf, int size){
+    buf->dat_ = malloc(size * sizeof(unsigned char));
+    buf->size_ = size;
+    buf->ri_ = buf->dat_;
+    buf->wi_ = buf->dat_;
+}
+
+// option 1
+Buffer_buffer(test, 15);
+
+//option 2
+Buffer test;
+Buffer_create(&test, 15);
 
 /**
  * @brief Writes (enqueues) data into the buffer
@@ -120,6 +138,21 @@ int Buffer_read(Buffer* buf) {
 bool Buffer_empty(Buffer* buf) {
     return buf->wi_ == buf->ri_;
 }
+
+/**
+ * @brief Peeks the item at the front of the queue
+ * @param buf Pointer to buffer
+ * @return Read value if successful, or -1 if no data available.
+*/
+int Buffer_peek(Buffer* buf) {
+    volatile unsigned char* ri = buf->ri_;
+    if (ri == buf->wi_){
+        return -1;
+    }
+
+    return *ri;
+}
+
 
 /*
  * Packet Parsing ===========================================
