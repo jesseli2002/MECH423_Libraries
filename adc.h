@@ -9,9 +9,9 @@ volatile unsigned int Adc_data_ = 0; // last read data
 volatile bool Adc_converted_ = false; // flag set in ISR
 
 #define Adc_NTC_ANALOG_PIN 4
-#define Adc_ACCELEROMETER_X_ 12
-#define Adc_ACCELEROMETER_Y_ 13
-#define Adc_ACCELEROMETER_Z_ 14
+#define Adc_ACCELEROMETER_X 12
+#define Adc_ACCELEROMETER_Y 13
+#define Adc_ACCELEROMETER_Z 14
 
 /**
  * @brief Measures and returns an analog value on the specified pin
@@ -48,6 +48,8 @@ volatile bool Adc_converted_ = false; // flag set in ISR
  *                         1 : ACLK
  *                         2 : MCLK
  *                         3 : SMCLK
+ *
+ * Exact counts probably don't matter, so sampleHoldCycles = 16, preDivider = divider = 1 is probably fine.
  * */
 void ADC_init(int sampleHoldCycles, int preDivider, int divider, unsigned int clockSource)
 {
@@ -177,7 +179,7 @@ void ADC_init(int sampleHoldCycles, int preDivider, int divider, unsigned int cl
 
 
 #pragma vector=ADC10_VECTOR
-__interrupt void conversionDone(void){
+__interrupt void Adc_conversionDone_(void){
     switch(__even_in_range(ADC10IV,12))
     {
     case  0: break;                          // No interrupt

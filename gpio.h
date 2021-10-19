@@ -115,7 +115,7 @@ typedef enum {
 
 /**
  * @brief Configures a pin for digital input or output. The corresponding PxSEL1 and PxSEL0 are set to 0 as a result.
- * @param port Which port to use - one of 1, 2, 3, 4
+ * @param port Which port to use - one of 1, 2, 3, 4, or 'J'
  * @param pin Which pin to use - number from 0 to 7
  * @param mode Whether pin should be configured as output, input without resistor,
  *             input with pullup resistor, or input with pulldown resistor; see Gpio_PinMode enum
@@ -129,6 +129,7 @@ void Gpio_pinMode(int port, int pin, Gpio_PinMode mode) {
         case 2: P2DIR &= ~bit; P2REN &= ~bit; break;
         case 3: P3DIR &= ~bit; P3REN &= ~bit; break;
         case 4: P4DIR &= ~bit; P4REN &= ~bit; break;
+        case 'J': PJDIR &= ~bit; PJREN &= ~bit; break;
         }
         break;
     case Gpio_PinMode_InputPullup:
@@ -137,6 +138,7 @@ void Gpio_pinMode(int port, int pin, Gpio_PinMode mode) {
         case 2: P2DIR &= ~bit; P2REN |= bit; P2OUT |= bit; break;
         case 3: P3DIR &= ~bit; P3REN |= bit; P3OUT |= bit; break;
         case 4: P4DIR &= ~bit; P4REN |= bit; P4OUT |= bit; break;
+        case 'J': PJDIR &= ~bit; PJREN |= bit; PJOUT |= bit; break;
         }
         break;
     case Gpio_PinMode_InputPulldown:
@@ -145,6 +147,7 @@ void Gpio_pinMode(int port, int pin, Gpio_PinMode mode) {
         case 2: P2DIR &= ~bit; P2REN |= bit; P2OUT &= ~bit; break;
         case 3: P3DIR &= ~bit; P3REN |= bit; P3OUT &= ~bit; break;
         case 4: P4DIR &= ~bit; P4REN |= bit; P4OUT &= ~bit; break;
+        case 'J': PJDIR &= ~bit; PJREN |= bit; PJOUT &= ~bit; break;
         }
         break;
     case Gpio_PinMode_Output:
@@ -153,6 +156,7 @@ void Gpio_pinMode(int port, int pin, Gpio_PinMode mode) {
         case 2: P2DIR |= bit; break;
         case 3: P3DIR |= bit; break;
         case 4: P4DIR |= bit; break;
+        case 'J': PJDIR |= bit; break;
         }
         break;
     }
@@ -162,6 +166,7 @@ void Gpio_pinMode(int port, int pin, Gpio_PinMode mode) {
     case 2: P2SEL0 &= ~bit; P2SEL0 &= ~bit; break;
     case 3: P3SEL0 &= ~bit; P3SEL0 &= ~bit; break;
     case 4: P4SEL0 &= ~bit; P4SEL0 &= ~bit; break;
+    case 'J': PJSEL0 &= ~bit; PJSEL0 &= ~bit; break;
     }
 }
 
@@ -169,7 +174,7 @@ void Gpio_pinMode(int port, int pin, Gpio_PinMode mode) {
 #define GPIO_LOW 0
 /**
  * @brief Drives a pin high or low. Must call Gpio_pinMode() first.
- * @param port Which port to use - one of 1, 2, 3, 4
+ * @param port Which port to use - one of 1, 2, 3, 4, 'J'
  * @param pin Which pin to use - number from 0 to 7
  * @param mode Either GPIO_HIGH or GPIO_LOW - see the defined macros above
  */
@@ -181,6 +186,7 @@ void Gpio_digitalWrite(int port, int pin, int mode) {
         case 2: P2OUT |= bit; break;
         case 3: P3OUT |= bit; break;
         case 4: P4OUT |= bit; break;
+        case 'J': PJOUT |= bit; break;
         }
     } else {
         switch(port){
@@ -188,13 +194,14 @@ void Gpio_digitalWrite(int port, int pin, int mode) {
         case 2: P2OUT &= ~bit; break;
         case 3: P3OUT &= ~bit; break;
         case 4: P4OUT &= ~bit; break;
+        case 'J': PJOUT &= ~bit; break;
         }
     }
 }
 
 /**
  * @brief Reads the value at a pin. Must call Gpio_pinMode() first.
- * @param port Which port to use - one of 1, 2, 3, 4
+ * @param port Which port to use - one of 1, 2, 3, 4, 'J'
  * @param pin Which pin to use - number from 0 to 7
  * @return Either GPIO_HIGH or GPIO_LOW - see the defined macros above
  */
@@ -205,6 +212,7 @@ int Gpio_digitalRead(int port, int pin) {
     case 2: return P2IN & bit;
     case 3: return P3IN & bit;
     case 4: return P4IN & bit;
+    case 'J': return PJIN & bit;
     }
     return 0;
 }

@@ -1,3 +1,6 @@
+#ifndef MECH423_LIB_UART_H
+#define MECH423_LIB_UART_H
+
 #include <common.h>
 #include <stdbool.h>
 #include <string.h>
@@ -100,7 +103,7 @@ __interrupt void USCI_A0_ISR(void)
 {
     RxByte = UCA0RXBUF;                 // Receive byte gets whatever is in the receive buffer
     while ((UCA0IFG & UCTXIFG) == 0);     // UCA0IFG: No interrupts pending. UCTXIFG is set when new data can be written into UCAxTXBUF
-	Buffer_write(Uart_buffer_, RxByte);	
+	Buffer_write(Uart_buffer_, RxByte);
 }
 
 /*
@@ -129,12 +132,12 @@ int Uart_read()
 	}
 	else
 	{
-		return Buffer_read(Uart_buffer_);		
+		return Buffer_read(Uart_buffer_);
 	}
 }
 /*
  * @brief returns true if data is available from the circular buffer, false otherwise
- * @param 
+ * @param
  */
 bool Uart_hasData()
 {
@@ -174,3 +177,4 @@ void Uart_transmitMessage(char* Message)
     return;
 }
 
+#endif
