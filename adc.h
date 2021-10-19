@@ -2,7 +2,7 @@
 #define MECH423_LIB_ADC_H
 
 #include <msp430.h>
-#include <stdbool.h>
+#include <stdbool.h> // required to use Booleans in C
 
 // ADC variables
 volatile unsigned int data = 0; // last read data
@@ -40,8 +40,12 @@ void setLedLevel(int value) {
 /**
  * @brief Measures and returns an analog value on the specified pin
  * @param analogPin which pin to output (e.g. 12 <==> pin A12)
+ * 		  NTC Sensor: Pin 4
+ * 		  AccelerometerX: Pin 12
+ * 		  AccelerometerY: Pin 13
+ * 		  AccelerometerZ: Pin 14
  **/
- unsigned int getAnalogValue(int analogPin) {
+ unsigned int Adc_read(int analogPin) {
     ADC10CTL0 &= ~ADC10ENC; // Disable conversion, so we can change channel
     ADC10MCTL0 = analogPin * ADC10INCH0; // Sample from specified pin
     ADC10CTL0 |= ADC10ENC; // Enable conversion
@@ -56,127 +60,144 @@ void setLedLevel(int value) {
     return data;
 }
 
+
 /**
- * main.c
- */
-int main(void)
+ * @brief
+ * @param sampleHoldCycles 4 / 8 / 16 / 32 / 64 / 96 / 128 / 192 / 256 / 384 / 512 / 768 / 1024
+ *                         these values are the only valid param values.
+ * @param preDivider       1 / 4 / 64
+ * @param divider          1 / 2 / 3 / 4 / 5 / 6 / 7 / 8
+ * @param clockSource 	   0 : MODCLK
+ *                         1 : ACLK
+ *                         2 : MCLK
+ *                         3 : SMCLK
+ * */
+void ADC_init(int sampleHoldCycles, int preDivider, int divider, unsigned int clockSource)
 {
-	WDTCTL = WDTPW | WDTHOLD;	// stop watchdog timer
-
-	// Clock setup ---------------------
-    // Enter clock control password
-    CSCTL0 = CSKEY;
-
-    // Set DCO clock speed to 8 MHz
-    CSCTL1 |= DCOFSEL0 + DCOFSEL1; // DCOFSEL = 0b11 => freq = 8MHz
-    CSCTL1 &= ~DCORSEL;	// Change the DCO output to the lower output range
-
-    // MCLK = DCO, ACLK = DCO, SMCLK = DCO
-    CSCTL2 = SELM0 + SELM1 + SELA0 + SELA1 + SELS0 + SELS1;
-
-    // Set divider to 1 on all clocks
-    CSCTL3 = 0;
-
-    // Enter wrong password to disable further clock edits
-    CSCTL0_H = 0;
-
-    // LED setup -----------------------
-    PJDIR |= BIT0 + BIT1 + BIT2 + BIT3;
-    P3DIR |= BIT4 + BIT5 + BIT6 + BIT7;
-
-    // power on P2.7 to power temperature sensor
-    P2DIR |= BIT7;
-    P2OUT |= BIT7;
-    // Configure ADC -------------------------
-    ADC10CTL0 &= ~ADC10ENC; // Disable conversion
-
-    ADC10CTL0 = ADC10SHT_6 // Sample and hold for many CLK cycles
-            + 0 * ADC10MSC // No multiple conversion
-            + ADC10ON // turn on ADC
-            ;
-    ADC10CTL1 = 0b0 * ADC10SHS0 // Use ADC10SC bit as SHI signal
-            + 0b1 * ADC10SHP // SAMPCON sourced from sampling timer, i.e. pulse mode of sampling
-            + 0 * ADC10ISSH // Don't invert signal
-            + ADC10DIV_0 // No clock division
-            + 0b11 * ADC10SSEL0 // Use SMCLK
-            + 0b00 * ADC10CONSEQ0 // Single channel, single conversion
-            ;
-    ADC10CTL2 = 0b1 * ADC10RES; // Set resolution to 10 bits
-
-    ADC10IE = ADC10IE0; // enable interrupts
-
-    __delay_cycles(400); // Delay for Ref to settle
-
-    // Setup UART -----------------------------------
-
-    // Setup P2.0, P2.1 for UART
-    P2SEL0 &= ~(BIT0 + BIT1); // for UCA0 TX and RX
-    P2SEL1 |= BIT0 + BIT1; // for UCA0 TX and RX
-
-    // Enable UC software reset while modifying settings
-    UCA0CTLW0 |= UCSWRST;
-    UCA0CTLW0 &= ~UCPEN; // disable parity
-    UCA0CTLW0 &= ~UC7BIT; // set as 8 bit data
-    UCA0CTLW0 &= ~UCSPB; // 1 stop bit
-    UCA0CTLW0 &= ~(UCMODE0 + UCMODE1); // UART mode
-    UCA0CTLW0 |= (UCSSEL1 + UCSSEL0); // Use SMCLK
-
-    // Baud rate setup (9600 baud)
-    UCA0BRW = 52; // UCBRx, referencing Table 18-5
-    UCA0MCTLW_L = (1 /* = UCBRFx */ << 4) + UCOS16 /* OS16 = 1*/;
-    UCA0MCTLW_H = 0x49; // UCBRSx
-	UCA0IE |= UCRXIE; // Enable the transmit interrupt
-
-    // Clear UC software reset to enable UART
-    UCA0CTLW0 &= ~UCSWRST;
-
-    // Wait for UART transmissions to clear
-    while ((UCA0IFG & UCTXIFG) == 0);
-
-
-    // Enable interrupts and start main loop -------------------
-    _EINT();
-
-    // dumb software delay loop
-    unsigned long count = 0;
-    while(1) {
-        int tempReading = getAnalogValue(NTC_ANALOG_PIN) & 0xFF;
-
-        ++count;
-
-        if(count > 2000) {
-            // MSB
-//        // Wait for Tx buffer to clear
-//        while ((UCA0IFG & UCTXIFG) == 0);
-//        // Transmit temperature reading
-//        UCA0TXBUF = tempReading >> 8;
-
-            // LSB
-            // Wait for Tx buffer to clear
-            while ((UCA0IFG & UCTXIFG) == 0);
-            // Transmit temperature reading
-            UCA0TXBUF = tempReading & 0xFF;
-
-            count = 0;
-        }
-
-        // Compute # LEDs to use
-        // Heating
-//        int numLeds = (200 - tempReading) * 7 / 16 + 1;
-        // Cooling
-        int numLeds = (tempReading - 198)/2;
-
-        if (numLeds < 1) {
-            setLedLevel(1);
-        } else {
-            setLedLevel(numLeds);
-        }
-
-//        __delay_cycles(5000000);
-    }
-
+	ADC10CTL0 &= ~ADC10ENC;                 // Disable conversion
+	ADC10CTL0 |= ADC10ON;                   // Activate the ADC
+    
+    switch(sampleHoldCycles)
+	{
+		case 4:
+			ADC10CTL0 |= ADC10SHT_0
+			break;
+		case 8:
+			ADC10CTL0 |= ADC10SHT_1
+			break;		
+		case 16:
+			ADC10CTL0 |= ADC10SHT_2
+			break;
+		case 32:
+			ADC10CTL0 |= ADC10SHT_3
+			break;
+		case 64:
+			ADC10CTL0 |= ADC10SHT_4
+			break;
+		case 96:
+			ADC10CTL0 |= ADC10SHT_5
+			break;
+		case 128:
+			ADC10CTL0 |= ADC10SHT_6
+			break;
+		case 192:
+			ADC10CTL0 |= ADC10SHT_7
+			break;
+		case 256:
+			ADC10CTL0 |= ADC10SHT_8
+			break;
+		case 384:
+			ADC10CTL0 |= ADC10SHT_9
+			break;			
+		case 512:
+			ADC10CTL0 |= ADC10SHT_10
+			break;			
+		case 768:
+			ADC10CTL0 |= ADC10SHT_11
+			break;
+		case 1024:
+			ADC10CTL0 |= ADC10SHT_12
+			break;						
+		default:
+			break;
+	}
+    
+    ADC10CTL1 |= ADC10SHS_0;                // Set the source as ADC10SC bit
+    ADC10CTL1 |= ADC10SHP;                  // Set the source of Sampling Signal (SAMPCON) as the sampling timer
+    ADC10CTL1 |= ADC10CONSEQ_0;             // Single channel, single conversion
+    
+	switch(divider)
+	{
+		case 1:
+			ADC10CTL1 |= ADC10DIV_0;                // ADC10 Clock Divider Select /1		
+			break;
+		case 2:
+			ADC10CTL1 |= ADC10DIV_1;                // ADC10 Clock Divider Select /2		
+			break;
+		case 3:
+			ADC10CTL1 |= ADC10DIV_2;                // ADC10 Clock Divider Select /3		
+			break;
+		case 4:
+			ADC10CTL1 |= ADC10DIV_3;                // ADC10 Clock Divider Select /3		
+			break;
+		case 5:
+			ADC10CTL1 |= ADC10DIV_4;                // ADC10 Clock Divider Select /3		
+			break;
+		case 6:
+			ADC10CTL1 |= ADC10DIV_5;                // ADC10 Clock Divider Select /3		
+			break;
+		case 7:
+			ADC10CTL1 |= ADC10DIV_6;                // ADC10 Clock Divider Select /3		
+			break;
+		case 8:
+			ADC10CTL1 |= ADC10DIV_7;                // ADC10 Clock Divider Select /3		
+			break;
+		default:
+			break;
+	}
+	
+	switch(preDivider)
+	{
+		case 1:
+			ADC10CTL1 |= ADC10PDIV_0;                // ADC10 Pre Clock Divider Select /3		
+			break;
+		case 4:
+			ADC10CTL1 |= ADC10PDIV_1;                // ADC10 Pre Clock Divider Select /4		
+			break;			
+		case 64:
+			ADC10CTL1 |= ADC10PDIV_2;                // ADC10 Pre Clock Divider Select /64		
+			break;						
+		default:
+			break;
+	}	
+	
+	switch(clockSource)
+	{
+		case 0:
+			ADC10CTL1 |= ADC10SSEL_0;                // ADC10 Pre Clock Divider Select /3		
+			break;
+		case 1:
+			ADC10CTL1 |= ADC10SSEL_1;                // ADC10 Pre Clock Divider Select /4		
+			break;			
+		case 2:
+			ADC10CTL1 |= ADC10SSEL_2;                // ADC10 Pre Clock Divider Select /64		
+			break;					
+		case 3:
+			ADC10CTL1 |= ADC10SSEL_3;                // ADC10 Pre Clock Divider Select /64		
+			break;					
+	}
+	
+	
+    ADC10CTL2 |= ADC10RES;                  // 10-bit conversion results
+	ADC10IE = ADC10IE0;                     // enable conversion complete interrupts
+	
+	// Power Up Sensors
+	P2DIR |= BIT7;                           // Setting P2.7 as an output
+    P2OUT |= BIT7;                           // Setting P2.7 to output HIGH
+	
 	return;
 }
+
 
 #pragma vector=ADC10_VECTOR
 __interrupt void conversionDone(void){
@@ -188,7 +209,7 @@ __interrupt void conversionDone(void){
     case  6: break;                          // ADC10HI
     case  8: break;                          // ADC10LO
     case 10: break;                          // ADC10IN
-    case 12: data = ADC10MEM0 >> 2;			 // Select the 8 least significant bits
+    case 12: data = ADC10MEM0;			     // 
 			 converted = true;
              break;
     default: break;
