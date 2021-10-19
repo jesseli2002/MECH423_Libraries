@@ -16,9 +16,7 @@
   */
 void uartBufferCreation(int sizeOfBuffer)
 {
-
     Buffer_Buffer(Uart_buffer_, sizeOfBuffer); //Name of circular buffer created
-
 }
 
 /*
@@ -93,8 +91,8 @@ void Uart_write(char CharacterToWriteToUart)
   *This ISR receives data, and writes this data to a previously created circular buffer called Uart_buffer_
   *ISR vector used: USCI_A0_VECTOR
   *Name of circular buffer used: Uart_buffer_
-  * @parm void
-  * @parm return void
+  * @param void
+  * @param return void
   */
 
 
@@ -103,7 +101,7 @@ __interrupt void USCI_A0_ISR(void)
 {
     RxByte = UCA0RXBUF;                 // Receive byte gets whatever is in the receive buffer
     while ((UCA0IFG & UCTXIFG) == 0);     // UCA0IFG: No interrupts pending. UCTXIFG is set when new data can be written into UCAxTXBUF
-    Uart_buffer_->wi_ = RxByte;
+	Buffer_write(Uart_buffer_, RxByte);	
 }
 
 /*
@@ -117,15 +115,64 @@ __interrupt void USCI_A0_ISR(void)
 
  /*
   * You need to create a buffer before using this function using "void uartBufferCreation(int sizeOfBuffer)" from above.
-  *This ISR receives data, and writes this data to a previously created circular buffer called Uart_buffer_
-  *ISR vector used: USCI_A0_VECTOR
-  *Name of circular buffer used: Uart_buffer_
-  * @parm void
-  * @parm return void
+  * This ISR receives data, and writes this data to a previously created circular buffer called Uart_buffer_
+  * ISR vector used: USCI_A0_VECTOR
+  * Name of circular buffer used: Uart_buffer_
+  *
+  * @brief Reads a single character from the UART circular buffer, or -1 if no data is available.
+  * @param void
+  * @param return -1 if the buffer is empty, else return dequeued value from Uart_buffer_
   */
-Uart_read()
+int Uart_read()
 {
-
+	if((Uart_buffer_) == true)
+	{
+		return -1;
+	}
+	else
+	{
+		return Buffer_read(Uart_buffer_);		
+	}
+}
+/*
+ * @brief returns true if data is available from the circular buffer, false otherwise
+ * @param 
+ */
+bool Uart_hasData()
+{
+	if(Buffer_empty(Uart_buffer_) == false)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
+/**
+ * @brief Sends a char array to the MSP430 transmission buffer.
+ * @param Message Pointer to the message.
+ * @return void
+ *
+ * Example usage:
+ * if(QueueIsEmpty)
+ * {
+ * 	  char ErrorMessageEmpty[] = "Error: Queue Empty";
+ *    TransmitMessage(ErrorMessageEmpty);
+ * }
+
+ **/
+
+void TransmitMessage(char* Message)
+{
+    int messageLength = strlen(Message);
+    int i;
+    for(i = 0; i < messageLength; i++)
+    {
+        while ((UCA0IFG & UCTXIFG)==0);
+        UCA0TXBUF = Message[i];
+    }
+    return;
+}
 
