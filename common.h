@@ -82,13 +82,6 @@ void Buffer_create(Buffer* buf, int size){
     buf->wi_ = buf->dat_;
 }
 
-// option 1
-Buffer_buffer(test, 15);
-
-//option 2
-Buffer test;
-Buffer_create(&test, 15);
-
 /**
  * @brief Writes (enqueues) data into the buffer
  * @param buf Pointer to buffer

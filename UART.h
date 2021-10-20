@@ -71,7 +71,7 @@ void Uart_write(char CharacterToWriteToUart)
 #pragma vector = USCI_A0_VECTOR
 __interrupt void USCI_A0_ISR_(void)
 {
-    RxByte = UCA0RXBUF;                 // Receive byte gets whatever is in the receive buffer
+    int RxByte = UCA0RXBUF;                 // Receive byte gets whatever is in the receive buffer
 	Buffer_write(&Uart_buffer_, RxByte);
 }
 

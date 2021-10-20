@@ -39,8 +39,7 @@ int Clock_dividerEncoder_(unsigned int divVal) {
     case 32:
         return 0b101;
     }
-    default:
-        return 0b000;
+    return 0;
 }
 
 /**
