@@ -56,7 +56,7 @@ int Clock_dividerEncoder_(unsigned int divVal) {
  * Dividers can be any of 1, 2, 4, 8, 16, 32.
  *
  * */
-void clockInit(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
+void Clock_init(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
     //Enter clock control password
     CSCTL0 = CSKEY;
 
