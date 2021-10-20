@@ -72,7 +72,7 @@ void Uart_write(char CharacterToWriteToUart)
 __interrupt void USCI_A0_ISR_(void)
 {
     RxByte = UCA0RXBUF;                 // Receive byte gets whatever is in the receive buffer
-	Buffer_write(Uart_buffer_, RxByte);
+	Buffer_write(&Uart_buffer_, RxByte);
 }
 
  /**
@@ -85,14 +85,14 @@ __interrupt void USCI_A0_ISR_(void)
   */
 int Uart_read()
 {
-    return Buffer_read(Uart_buffer_);
+    return Buffer_read(&Uart_buffer_);
 }
 /**
  * @brief returns true if data is available from the circular buffer, false otherwise
  */
 bool Uart_hasData()
 {
-	return !Buffer_empty(Uart_buffer_);
+	return !Buffer_empty(&Uart_buffer_);
 }
 
 /**

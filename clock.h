@@ -18,6 +18,32 @@ typedef enum {
 } Clock_DcoFreq; // MHz
 
 /**
+ * @brief convert a divider value to the associated binary values needed
+ * @param divVal: decimal divider value for a clock including 1, 2, 4, 8, 16, 32
+ * @return binary value to get the appropriate  divider. If no appropriate divider value is provided then no divier will be applied.
+ *
+ * */
+int Clock_dividerEncoder_(unsigned int divVal) {
+
+    switch(divVal){
+    case 1:
+        return 0b000;
+    case 2:
+        return 0b001;
+    case 4:
+        return 0b010;
+    case 8:
+        return 0b011;
+    case 16:
+        return 0b100;
+    case 32:
+        return 0b101;
+    }
+    default:
+        return 0b000;
+}
+
+/**
  * @brief Configure DCO at a given MHZ
  * @param Clock_DcoFreq: Integer value (only of the clock) Clock frequency can be given for 5.3, 6.7,8, 16,20, and 24.
  * @param mdiv: Clock divider to be applied to the main clock
@@ -71,31 +97,5 @@ void clockInit(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
     CSCTL3 = Clock_dividerEncoder_(mdiv) << 0 + Clock_dividerEncoder_(smdiv) << 4 + Clock_dividerEncoder_(adiv) << 8; //setting the divider bits
 }
 
-
-/**
- * @brief convert a divider value to the associated binary values needed
- * @param divVal: decimal divider value for a clock including 1, 2, 4, 8, 16, 32
- * @return binary value to get the appropriate  divider. If no appropriate divider value is provided then no divier will be applied.
- *
- * */
-int Clock_dividerEncoder_(unsigned int divVal) {
-
-    switch(divVal){
-    case 1:
-        return 0b000;
-    case 2:
-        return 0b001;
-    case 4:
-        return 0b010;
-    case 8:
-        return 0b011;
-    case 16:
-        return 0b100;
-    case 32:
-        return 0b101;
-    }
-    default:
-        return 0b000;
-}
 
 #endif
