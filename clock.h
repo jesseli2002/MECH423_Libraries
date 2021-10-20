@@ -8,15 +8,6 @@
 
 
 
-typedef enum {
-    Clock_DcoFreq_5, // 5.33
-    Clock_DcoFreq_6, //6.77
-    Clock_DcoFreq_8,
-    Clock_DcoFreq_16,
-    Clock_DcoFreq_20,
-    Clock_DcoFreq_24
-} Clock_DcoFreq; // MHz
-
 /**
  * @brief convert a divider value to the associated binary values needed
  * @param divVal: decimal divider value for a clock including 1, 2, 4, 8, 16, 32
@@ -41,6 +32,16 @@ int Clock_dividerEncoder_(unsigned int divVal) {
     }
     return 0;
 }
+
+typedef enum {
+    Clock_DcoFreq_5, // 5.33
+    Clock_DcoFreq_6, //6.77
+    Clock_DcoFreq_8,
+    Clock_DcoFreq_16,
+    Clock_DcoFreq_20,
+    Clock_DcoFreq_24
+} Clock_DcoFreq; // MHz
+
 
 /**
  * @brief Configure DCO at a given MHZ
