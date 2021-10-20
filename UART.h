@@ -134,6 +134,8 @@ unsigned int Uart_baudLookupOut_[] = {
  * @param clockSource One of UCSSEL__UCLK, UCSSEL__ACLK, UCSSEL__SMCLK. Defines the source clock for the UART.
  * @param freq Frequency of the clock source, in Hz
  * @param baud Baud rate. 9600 is most common.
+ *
+ * Note: For some reason this works for writing to the UART port, but not for reading... fingers crossed it doesn't come up at all
 */
 void Uart_beginAtFreq(unsigned int clockSource, unsigned long freq, unsigned long baud){
     // Configure ports for UCA0 [ports for UCA0 TX and RX]
