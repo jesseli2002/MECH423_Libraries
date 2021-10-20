@@ -1,3 +1,6 @@
+#ifndef MECH423_LIB_GPIO_H
+#define MECH423_LIB_GPIO_H
+
 #include <stdlib.h>
 /*
 Capabilities:
@@ -246,3 +249,5 @@ void Gpio_configureButton(int button, Gpio_Edge edgeType, void (*function)(void)
         Gpio_onInterruptP4_1 = function;
     }
 }
+
+#endif
