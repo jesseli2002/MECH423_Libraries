@@ -99,7 +99,7 @@ bool Uart_hasData()
  *    Uart_transmitMessage("Error: Queue Empty");
  * }
  **/
-void Uart_transmitMessage_(const char* Message)
+void Uart_transmitMessage(const char* Message)
 {
     int messageLength = strlen(Message);
     int i;
