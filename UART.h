@@ -6,6 +6,13 @@
 
 #include "common.h"
 
+/**
+ * @brief Flag that indicates whether the UART buffer has overflowed.
+ *
+ * Gets set by the UART RX ISR, if the circular buffer overflows. You have to reset this flag manually.
+*/
+bool Uart_overflowed = false;
+
 /*
  *
  * UART Circular Buffer Creation======================================================================
@@ -66,7 +73,9 @@ void Uart_write(char CharacterToWriteToUart)
 __interrupt void USCI_A0_ISR_(void)
 {
     int RxByte = UCA0RXBUF;                 // Receive byte gets whatever is in the receive buffer
-	Buffer_write(&Uart_buffer_, RxByte);
+	if (!Buffer_write(&Uart_buffer_, RxByte)){
+        Uart_overflowed = true;
+    }
 }
 
  /**
