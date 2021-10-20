@@ -94,7 +94,8 @@ void Clock_init(Clock_DcoFreq value, int mdiv, int smdiv, int adiv){
 
     CSCTL2 |= SELA0 + SELA1 + SELM0 + SELM1 + SELS0 + SELS1; //set all clocks to DCO
 
-    CSCTL3 = Clock_dividerEncoder_(mdiv) << 0 + Clock_dividerEncoder_(smdiv) << 4 + Clock_dividerEncoder_(adiv) << 8; //setting the divider bits
+    CSCTL3 = (Clock_dividerEncoder_(mdiv) << 0) + (Clock_dividerEncoder_(smdiv) << 4) + (Clock_dividerEncoder_(adiv) << 8); //setting the divider bits
+
 }
 
 
