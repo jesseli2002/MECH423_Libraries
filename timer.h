@@ -1,3 +1,6 @@
+#ifndef MECH423_LIB_TIMER_H
+#define MECH423_LIB_TIMER_H
+
 #include <stdlib.h>
 /*
 Capabilities:
@@ -412,3 +415,5 @@ void Timer_configurePeriodicInterrupt(Timer id, unsigned int clockSource, unsign
     // Enable CCR0 interrupts
     Timer_writeCCTL0_(id, CCIE);
 }
+
+#endif

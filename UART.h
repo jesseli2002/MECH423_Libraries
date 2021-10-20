@@ -51,7 +51,6 @@ void Uart_begin(unsigned int clockSource)
 }
 
 float Uart_baudLookupIn_[] = {
-    0.0000,
     0.0529,
     0.0715,
     0.0835,
@@ -86,8 +85,9 @@ float Uart_baudLookupIn_[] = {
     0.8751,
     0.9004,
     0.9170,
-    0.9288
-}
+    0.9288,
+    100.0
+};
 unsigned int Uart_baudLookupOut_[] = {
     0x00,
     0x01,
@@ -125,7 +125,7 @@ unsigned int Uart_baudLookupOut_[] = {
     0xFB,
     0xFD,
     0xFE,
-}
+};
 
 
 
@@ -144,24 +144,28 @@ void Uart_beginAtFreq(unsigned int clockSource, unsigned long freq, unsigned lon
     UCA0CTLW0 |= UCSWRST;
 
     // Determine baud rate parameters
-    float N = freq / baud;
-    unsigned int os16, ucbrx, ucbrfx, ucbrsx = 0;
-    if (N > 16){
+    float N_value = ((float)freq) / baud;
+    unsigned int os16 = 0;
+    unsigned int ucbrx = 0;
+    unsigned int ucbrfx = 0;
+    unsigned int ucbrsx = 0;
+
+    if (N_value > 16){
         os16 = 1;
-        float N_div16 = N / 16;
+        float N_div16 = N_value / 16;
 
         ucbrx = (int) N_div16;
-        ucbrfx = (int)((N_div16 - (int)(N_div16)) * 16)
+        ucbrfx = (int)((N_div16 - (int)(N_div16)) * 16);
     } else {
         os16 = 0;
-        ucbrx = (int) N;
+        ucbrx = (int) N_value;
         ucbrfx = 0;
     }
 
     int i;
-    float N_frac = N - (int)N;
+    float N_frac = N_value - (int)N_value;
     for (i = 0; i < 36; ++i){
-        if(N_frac >= Uart_baudLookupIn_[i]) {
+        if(N_frac < Uart_baudLookupIn_[i]) {
             ucbrsx = Uart_baudLookupOut_[i];
             break;
         }
