@@ -22,28 +22,22 @@
 Buffer_Buffer(Uart_buffer_, BUFFER_SIZE); //Name of circular buffer created
 
  /**
-  * This function sets up the UART at 9600 baud. It also allows for UART clock source selection. Finally, it enables UART's interrupts.
+  * @brief This function sets up the UART at 9600 baud. It also allows for UART clock source selection. Finally, it enables UART's interrupts.
   * Usage:
-  * Uart_begin(3); //Starts UART at 9600 baud with the SMCLK as the source clock
+  * Uart_begin(UCSSEL__SMCLK); //Starts UART at 9600 baud with the SMCLK as the source clock
   *
-  * @param this function takes an integer value which defines the UART's clock source: 1=UCLK, 2=ACLK, 3=SMCLK, 4=SMCLK
+  * @param clockSource One of UCSSEL__UCLK, UCSSEL__ACLK, UCSSEL__SMCLK. Defines the source clock for the UART.
   *
   * Clock source must be running at 8 MHz.
   */
 
-void Uart_begin(int ClockSource)
+void Uart_begin(unsigned int clockSource)
 {
     // Configure ports for UCA0 [ports for UCA0 TX and RX]
     P2SEL0 &= ~(BIT0 + BIT1);
     P2SEL1 |= BIT0 + BIT1;
 
-    // Configure UCA0
-    switch (ClockSource) {                    //selects UART's clock source
-    case 1: UCA0CTLW0 = UCSSEL__UCLK; break;
-    case 2: UCA0CTLW0 = UCSSEL__ACLK; break;
-    case 3: UCA0CTLW0 = UCSSEL__SMCLK; break;
-    case 4: UCA0CTLW0 = UCSSEL__SMCLK; break;
-    }
+    UCA0CTLW0 = clockSource;
     UCA0BRW = 52;                        //Referencing Table 18-5. N.b. that this is a decimal input
     UCA0MCTLW = 0x4900 + UCOS16 + UCBRF0;  //Modulation Control Word
     UCA0IE |= UCRXIE;                    //Enable the transmit interrupt
